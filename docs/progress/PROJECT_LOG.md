@@ -16,3 +16,12 @@
 - 完成前后端健康检查联调，确认前端可以读取后端接口返回。
 - 使用 GitHub Desktop 提交并推送后端骨架、健康检查接口和前端联调代码到 GitHub 仓库。
 - 修订 `AGENTS.md`，明确项目采用现代、日常、快速、常用的开发方式：IDEA、Spring Initializr、VS Code、Vite、Apifox、GitHub Desktop 等。
+- 完成登录模块最小设计，明确第一阶段先做用户名密码登录、用户表、DTO、VO、Service、Controller 和 Apifox 验证。
+- 在 MySQL 中创建 `knowflow` 数据库、`sys_user` 表，并插入 admin 测试用户。
+- 创建数据库专用账号 `knowflow_user`，授权访问 `knowflow` 数据库，避免后端直接使用 root 账号连接数据库。
+- 后端引入 MyBatis-Plus 和 MySQL Connector 依赖。
+- 配置 Spring Boot 数据源，使用 `${DB_PASSWORD}` 从本地环境变量读取数据库密码。
+- 创建本地 `backend/.env.local` 保存开发环境数据库账号密码，并将 `.env`、`.env.local` 加入 `.gitignore`，避免敏感信息提交到 Git。
+- 创建 `SysUser` 实体、`SysUserMapper`、`UserVO` 和临时验证接口 `GET /api/test/user`。
+- 使用 Apifox 验证后端可以从 MySQL 查询 admin 用户。
+- 调整接口返回结构，使用 `UserVO` 过滤 `password` 字段，避免密码返回给前端。
