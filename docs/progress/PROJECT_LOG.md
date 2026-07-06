@@ -10,5 +10,9 @@
 - 创建 `ApiResponse` 统一响应结构，让接口返回包含 `code`、`message`、`data`。
 - 使用 Apifox 调试 `GET /api/health`，确认接口返回 `200`。
 - 在 Apifox 中保存“健康检查”接口，建立后续接口调试流程。
-- 使用 GitHub Desktop 提交并推送后端骨架和健康检查接口到 GitHub 仓库。
-- 修订 `AGENTS.md`，明确项目采用现代、日常、快速、常用的开发方式：IDEA、Spring Initializr、Apifox、GitHub Desktop 等。
+- 使用 Vite 创建前端 Vue3 + TypeScript 项目骨架。
+- 配置 Vite proxy，将前端 `/api` 请求转发到 Spring Boot 后端。
+- 修改前端首页，调用 `GET /api/health` 并展示后端状态和服务名。
+- 完成前后端健康检查联调，确认前端可以读取后端接口返回。
+- 使用 GitHub Desktop 提交并推送后端骨架、健康检查接口和前端联调代码到 GitHub 仓库。
+- 修订 `AGENTS.md`，明确项目采用现代、日常、快速、常用的开发方式：IDEA、Spring Initializr、VS Code、Vite、Apifox、GitHub Desktop 等。
