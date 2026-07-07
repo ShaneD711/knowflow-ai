@@ -25,3 +25,14 @@
 - 创建 `SysUser` 实体、`SysUserMapper`、`UserVO` 和临时验证接口 `GET /api/test/user`。
 - 使用 Apifox 验证后端可以从 MySQL 查询 admin 用户。
 - 调整接口返回结构，使用 `UserVO` 过滤 `password` 字段，避免密码返回给前端。
+
+## 2026-07-07
+
+### 今日完成
+
+- 创建 `LoginRequest`，用于接收登录接口传入的 `username` 和 `password`。
+- 创建 `AuthService`，完成用户名查询、密码校验、账号状态校验和用户信息返回逻辑。
+- 创建 `AuthController`，提供登录接口 `POST /api/auth/login`。
+- 使用 Apifox 保存“登录”接口，并完成登录成功、密码错误、用户不存在、空用户名和缺少密码等场景验证。
+- 登录接口返回 `UserVO`，确认响应结果不包含 `password` 字段。
+- 删除临时数据库查询验证接口 `GET /api/test/user`，避免保留无业务意义的测试接口。
