@@ -39,3 +39,9 @@
 - 前端首页改造为登录表单和登录后状态页。
 - 使用 `v-model` 绑定用户名和密码输入框，使用 `fetch` 调用 `POST /api/auth/login`。
 - 完成前端登录成功、登录失败、空参数提示和退出登录验证。
+- 在 MySQL 中创建 `kb_document` 知识库文档表，用于保存文档标题、正文、创建人和创建/更新时间。
+- 创建知识库模块后端基础结构：`KbDocument`、`KbDocumentMapper`、`CreateDocumentRequest`、`KbDocumentListItemVO`、`KnowledgeService`、`KnowledgeController`。
+- 完成知识库文档新增接口 `POST /api/kb/documents`，通过 `CreateDocumentRequest` 接收标题和正文，并保存到 `kb_document` 表。
+- 使用 Apifox 验证新增文档接口，确认接口返回新文档 ID，并在数据库中生成记录。
+- 完成知识库文档列表接口 `GET /api/kb/documents`，按 ID 倒序返回文档列表。
+- 列表接口使用 `KbDocumentListItemVO` 控制返回字段，只返回 `id`、`title`、`createdBy`、`createdAt`、`updatedAt`，不返回完整 `content`。
