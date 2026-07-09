@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 
+// ==================== 类型定义 ====================
+
 // 后端统一响应格式：所有接口都会返回 code、message、data
 // T 表示 data 里面的具体数据类型，比如 HealthData 或 LoginUser
 type ApiResponse<T> = {
@@ -27,9 +29,22 @@ type LoginUser = {
   updatedAt: string;
 };
 
+// 知识库文档列表项结构
+type KbDocumentListItem = {
+  id: number;
+  title: string;
+  createdBy: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+// ==================== 健康检查状态 ====================
+
 // 后端健康检查状态，用来显示后端是否正常运行
 const backendStatus = ref("检测中...");
 const backendService = ref("-");
+
+// ==================== 登录状态 ====================
 
 // 登录表单状态：输入框内容、错误提示、按钮加载状态、当前登录用户
 const username = ref("");
@@ -37,6 +52,13 @@ const password = ref("");
 const loginError = ref("");
 const loginLoading = ref(false);
 const currentUser = ref<LoginUser | null>(null);
+
+// ==================== 知识库文档状态 ====================
+
+// 知识库文档列表
+const documents = ref<KbDocumentListItem[]>([]);
+
+// ==================== 页面初始化 ====================
 
 // 页面加载完成后自动请求健康检查接口
 onMounted(async () => {
@@ -48,6 +70,20 @@ onMounted(async () => {
     backendService.value = result.data.service;
   }
 });
+
+// ==================== 接口请求函数 ====================
+
+// 查询知识库文档列表
+async function loadDocuments() {
+  const response = await fetch("/api/kb/documents");
+  const result: ApiResponse<KbDocumentListItem[]> = await response.json();
+
+  if (result.data) {
+    documents.value = result.data;
+  }
+}
+
+// ==================== 页面操作函数 ====================
 
 // 登录按钮触发的函数：把用户名和密码发给后端登录接口
 async function handleLogin() {
@@ -80,6 +116,9 @@ async function handleLogin() {
   currentUser.value = result.data;
   password.value = "";
   loginLoading.value = false;
+
+  // 登录成功后，查询文档列表
+  await loadDocuments();
 }
 
 // 退出登录：清空当前用户，页面会自动回到登录表单
@@ -88,6 +127,7 @@ function handleLogout() {
   username.value = "";
   password.value = "";
   loginError.value = "";
+  documents.value = [];
 }
 </script>
 
@@ -136,6 +176,18 @@ function handleLogout() {
           <li>后端服务：{{ backendService }}</li>
           <li>前端 Vue 项目已启动</li>
           <li>登录接口已完成</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>知识库文档</h2>
+
+        <p v-if="documents.length === 0">暂无文档</p>
+
+        <ul v-else>
+          <li v-for="document in documents" :key="document.id">
+            {{ document.title }}
+          </li>
         </ul>
       </section>
     </section>
