@@ -45,3 +45,15 @@
 - 使用 Apifox 验证新增文档接口，确认接口返回新文档 ID，并在数据库中生成记录。
 - 完成知识库文档列表接口 `GET /api/kb/documents`，按 ID 倒序返回文档列表。
 - 列表接口使用 `KbDocumentListItemVO` 控制返回字段，只返回 `id`、`title`、`createdBy`、`createdAt`、`updatedAt`，不返回完整 `content`。
+
+## 2026-07-09
+
+### 今日完成
+
+- 创建 `KbDocumentDetailVO`，用于知识库文档详情接口返回完整文档内容。
+- 完成知识库文档详情接口 `GET /api/kb/documents/{id}`，支持按文档 ID 查询标题、正文、创建时间和更新时间。
+- 完成知识库文档删除接口 `DELETE /api/kb/documents/{id}`，删除成功返回 `true`，文档不存在时返回业务错误。
+- 创建 `UpdateDocumentRequest`，用于接收修改文档时传入的 `title` 和 `content`。
+- 完成知识库文档修改接口 `PUT /api/kb/documents/{id}`，支持修改文档标题和正文。
+- 使用 Apifox 验证知识库文档新增、列表、详情、修改和删除接口，知识库文档模块基础 CRUD 闭环完成。
+- 梳理 DTO、Entity、VO 的职责边界：DTO 接收前端请求，Entity 映射数据库表，VO 控制返回给前端的数据结构。

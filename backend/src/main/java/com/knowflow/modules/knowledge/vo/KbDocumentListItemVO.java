@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 /**
  * 文档列表项VO
+ * 文档列表项，不返回文档内容content
  */
 public record KbDocumentListItemVO(
         // 文档ID
