@@ -53,6 +53,11 @@ const loginError = ref("");
 const loginLoading = ref(false);
 const currentUser = ref<LoginUser | null>(null);
 
+// ==================== 主题状态 ====================
+
+// 深色模式开关
+const isDarkMode = ref(true);
+
 // ==================== 知识库文档状态 ====================
 
 // 知识库文档列表
@@ -129,10 +134,15 @@ function handleLogout() {
   loginError.value = "";
   documents.value = [];
 }
+
+// 切换主题：深色模式/浅色模式
+function toggleTheme() {
+  isDarkMode.value = !isDarkMode.value;
+}
 </script>
 
 <template>
-  <main>
+  <main :class="{ 'light-mode': !isDarkMode }">
     <!-- currentUser 为空时，说明还没登录，显示登录表单 -->
     <section v-if="!currentUser" class="login-panel">
       <h1>KnowFlow AI</h1>
@@ -162,35 +172,62 @@ function handleLogout() {
 
     <!-- currentUser 有值时，说明登录成功，显示登录后页面 -->
     <section v-else class="dashboard">
-      <h1>KnowFlow AI</h1>
-      <p>欢迎回来，{{ currentUser.nickname }}（{{ currentUser.username }}）</p>
-      <button type="button" class="logout-button" @click="handleLogout">
-        退出登录
-      </button>
+      <header class="dashboard-header">
+        <div>
+          <h1>KnowFlow AI</h1>
+          <p>
+            欢迎回来，{{ currentUser.nickname }}（{{ currentUser.username }}）
+          </p>
+        </div>
 
-      <section>
-        <h2>当前开发进度</h2>
-        <ul>
-          <li>后端 Spring Boot 项目已启动</li>
-          <li>后端状态：{{ backendStatus }}</li>
-          <li>后端服务：{{ backendService }}</li>
-          <li>前端 Vue 项目已启动</li>
-          <li>登录接口已完成</li>
-        </ul>
-      </section>
+        <button type="button" class="theme-button" @click="toggleTheme">
+          {{ isDarkMode ? "浅色模式" : "深色模式" }}
+        </button>
 
-      <section>
-        <h2>知识库文档</h2>
+        <button type="button" class="logout-button" @click="handleLogout">
+          退出登录
+        </button>
+      </header>
 
-        <p v-if="documents.length === 0">暂无文档</p>
+      <div class="dashboard-grid">
+        <section>
+          <div class="section-header">
+            <div>
+              <h2>知识库文档</h2>
+              <p>共 {{ documents.length }} 篇文档</p>
+            </div>
+          </div>
 
-        <ul v-else>
-          <li v-for="document in documents" :key="document.id">
-            {{ document.title }}
-          </li>
-        </ul>
-      </section>
+          <p v-if="documents.length === 0" class="empty-message">暂无文档</p>
+
+          <ul v-else class="document-list">
+            <li
+              v-for="document in documents"
+              :key="document.id"
+              class="document-item"
+            >
+              <strong>{{ document.title }}</strong>
+              <span>更新时间：{{ document.updatedAt }}</span>
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>系统状态</h2>
+          <ul>
+            <li>后端 Spring Boot 项目已启动</li>
+            <li>后端状态：{{ backendStatus }}</li>
+            <li>后端服务：{{ backendService }}</li>
+            <li>前端服务：Vue 已启动</li>
+            <li>登录状态：已登录</li>
+          </ul>
+        </section>
+      </div>
     </section>
+
+    <footer class="app-footer">
+      KnowFlow AI · 知识库客服工单协同平台 · 本地开发环境
+    </footer>
   </main>
 </template>
 
@@ -199,17 +236,23 @@ main {
   min-height: 100vh;
   padding: 80px 24px;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
   background: #111827;
   color: #f9fafb;
 }
 
-.login-panel,
-.dashboard {
+.login-panel {
   width: 100%;
   max-width: 480px;
   text-align: center;
+}
+
+.dashboard {
+  width: 100%;
+  max-width: 1180px;
+  text-align: left;
 }
 
 h1 {
@@ -272,8 +315,29 @@ button:disabled {
   color: #f87171;
 }
 
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr;
+  gap: 24px;
+}
+
+.dashboard-grid > section {
+  padding: 24px;
+  border: 1px solid #1f2937;
+  border-radius: 8px;
+  background: #020617;
+}
+
 .dashboard section {
-  margin-top: 32px;
+  margin-top: 0;
 }
 
 ul {
@@ -282,19 +346,150 @@ ul {
   padding-left: 24px;
 }
 
+.document-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-left: 0;
+  list-style: none;
+}
+
+.document-item {
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px solid #1f2937;
+  border-radius: 8px;
+  background: #111827;
+}
+
+.document-item strong,
+.document-item span {
+  display: block;
+}
+
+.document-item strong {
+  margin-bottom: 8px;
+  color: #f9fafb;
+}
+
+.empty-message {
+  margin: 24px 0 0;
+  padding: 20px;
+  border: 1px dashed #374151;
+  border-radius: 8px;
+  color: #9ca3af;
+  text-align: center;
+}
+
+.document-item span {
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+.document-item:hover {
+  border-color: #2563eb;
+  background: #0f172a;
+}
+
 li {
   margin: 8px 0;
+}
+
+.theme-button {
+  width: auto;
+  min-width: 96px;
+  margin-right: 12px;
+  padding: 0 18px;
+  background: #1f2937;
+}
+
+.theme-button:hover {
+  background: #374151;
 }
 
 .logout-button {
   width: auto;
   min-width: 96px;
-  margin-top: 16px;
   padding: 0 18px;
   background: #374151;
 }
 
 .logout-button:hover {
   background: #4b5563;
+}
+
+@media (max-width: 760px) {
+  main {
+    padding: 40px 16px;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.light-mode {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.light-mode p {
+  color: #4b5563;
+}
+
+.light-mode input {
+  border-color: #d1d5db;
+  background: #ffffff;
+  color: #111827;
+}
+
+.light-mode .dashboard-grid > section,
+.light-mode .document-item {
+  border-color: #e5e7eb;
+  background: #ffffff;
+}
+
+.light-mode .document-item {
+  background: #f9fafb;
+}
+
+.light-mode .document-item strong {
+  color: #111827;
+}
+
+.light-mode .document-item span {
+  color: #6b7280;
+}
+
+.light-mode .theme-button,
+.light-mode .logout-button {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.light-mode .theme-button:hover,
+.light-mode .logout-button:hover {
+  background: #d1d5db;
+}
+
+.light-mode h1,
+.light-mode h2 {
+  color: #111827;
+}
+
+.app-footer {
+  width: 100%;
+  margin-top: 48px;
+  color: #6b7280;
+  font-size: 13px;
+  text-align: center;
+}
+
+.light-mode .app-footer {
+  color: #6b7280;
 }
 </style>
