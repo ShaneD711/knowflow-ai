@@ -126,6 +126,13 @@ ul {
   border: 1px solid #1f2937;
   border-radius: 8px;
   background: #111827;
+  width: 100%;
+  height: auto;
+  text-align: left;
+}
+
+.document-list > li {
+  margin: 0;
 }
 
 .document-item strong,
@@ -136,6 +143,24 @@ ul {
 .document-item strong {
   margin-bottom: 8px;
   color: #f9fafb;
+}
+
+.document-detail-header {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #1f2937;
+}
+
+.document-detail-header p {
+  font-size: 13px;
+}
+
+.document-content {
+  color: #d1d5db;
+  font-size: 16px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .empty-message {
@@ -257,4 +282,12 @@ li {
 
 .light-mode .app-footer {
   color: #6b7280;
+}
+
+.light-mode .document-detail-header {
+  border-bottom-color: #d1d5db;
+}
+
+.light-mode .document-content {
+  color: #111827;
 }

@@ -2,14 +2,15 @@
 import { onMounted, ref } from "vue";
 import { login } from "./api/auth";
 import { getHealth } from "./api/health";
-import { getDocuments } from "./api/knowledge";
+import { getDocuments, getDocumentDetail } from "./api/knowledge";
 import AppFooter from "./components/AppFooter.vue";
 import DashboardHeader from "./components/DashboardHeader.vue";
 import KnowledgeList from "./components/KnowledgeList.vue";
 import LoginPanel from "./components/LoginPanel.vue";
 import SystemStatusPanel from "./components/SystemStatusPanel.vue";
 import type { LoginRequest, LoginUser } from "./types/auth";
-import type { KbDocumentListItem } from "./types/knowledge";
+import type { KbDocumentListItem, KbDocumentDetail } from "./types/knowledge";
+import DocumentDetailPanel from "./components/DocumentDetailPanel.vue";
 
 // ==================== 页面状态 ====================
 
@@ -20,6 +21,7 @@ const loginLoading = ref(false);
 const currentUser = ref<LoginUser | null>(null);
 const isDarkMode = ref(true);
 const documents = ref<KbDocumentListItem[]>([]);
+const selectedDocument = ref<KbDocumentDetail | null>(null);
 
 // ==================== 页面初始化 ====================
 
@@ -39,6 +41,15 @@ async function loadDocuments() {
 
   if (result.data) {
     documents.value = result.data;
+  }
+}
+
+// 点击文档后查询并保存文档详情
+async function handleSelectDocument(id: number) {
+  const result = await getDocumentDetail(id);
+
+  if (result.data) {
+    selectedDocument.value = result.data;
   }
 }
 
@@ -64,6 +75,7 @@ function handleLogout() {
   currentUser.value = null;
   loginError.value = "";
   documents.value = [];
+  selectedDocument.value = null;
 }
 
 function toggleTheme() {
@@ -89,8 +101,17 @@ function toggleTheme() {
       />
 
       <div class="dashboard-grid">
-        <KnowledgeList :documents="documents" />
+        <KnowledgeList
+          :documents="documents"
+          @select-document="handleSelectDocument"
+        />
+        <DocumentDetailPanel
+          v-if="selectedDocument"
+          :document="selectedDocument"
+        />
+
         <SystemStatusPanel
+          v-else
           :backend-status="backendStatus"
           :backend-service="backendService"
         />

@@ -85,3 +85,23 @@
 
 - 在浏览器中手动验证登录、退出登录、文档列表和深色/浅色主题切换。
 - 为知识库文档列表增加点击操作，调用文档详情接口并展示完整正文。
+
+## 2026-07-12
+
+### 今日完成
+
+- 在前端增加 `KbDocumentDetail` 类型，用于描述详情接口返回的标题、正文、创建时间和更新时间。
+- 在 `frontend/src/api/knowledge.ts` 中增加 `getDocumentDetail(id)`，调用 `GET /api/kb/documents/{id}` 查询指定文档详情。
+- 在 `App.vue` 中增加 `selectedDocument` 响应式状态和 `handleSelectDocument(id)` 页面操作函数，负责查询并保存当前文档详情。
+- 在 `KnowledgeList.vue` 中使用 `defineEmits` 声明 `select-document` 事件，并通过可点击按钮将文档 ID 传给父组件。
+- 创建 `DocumentDetailPanel.vue`，通过 `props` 接收并展示文档标题、更新时间和完整正文。
+- 使用 `v-if / v-else` 控制右侧区域：未选择文档时显示系统状态，选择文档后显示文档详情。
+- 在退出登录时清空 `selectedDocument`，避免重新登录后显示上一次查看的旧文档。
+- 完善文档详情样式，增加标题分隔线、正文行距、原始换行保留、长内容换行以及深色/浅色模式配色。
+- 在浏览器中验证点击文档后可以正确显示详情，并验证退出后重新登录会恢复系统状态面板。
+- 运行 `npm run build`，确认 TypeScript 检查和 Vite 生产构建通过。
+
+### 下一步
+
+- 在前端增加新建文档表单，调用 `POST /api/kb/documents` 创建文档。
+- 创建成功后重新查询文档列表，并在页面中显示新文档。

@@ -4,6 +4,8 @@ import type { KbDocumentListItem } from "../types/knowledge";
 defineProps<{
   documents: KbDocumentListItem[];
 }>();
+
+defineEmits<{ "select-document": [id: number] }>();
 </script>
 
 <template>
@@ -18,13 +20,15 @@ defineProps<{
     <p v-if="documents.length === 0" class="empty-message">暂无文档</p>
 
     <ul v-else class="document-list">
-      <li
-        v-for="document in documents"
-        :key="document.id"
-        class="document-item"
-      >
-        <strong>{{ document.title }}</strong>
-        <span>更新时间：{{ document.updatedAt }}</span>
+      <li v-for="document in documents" :key="document.id">
+        <button
+          type="button"
+          class="document-item"
+          @click="$emit('select-document', document.id)"
+        >
+          <strong>{{ document.title }}</strong>
+          <span>更新时间：{{ document.updatedAt }}</span>
+        </button>
       </li>
     </ul>
   </section>
