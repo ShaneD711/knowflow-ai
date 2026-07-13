@@ -7,6 +7,7 @@ import com.knowflow.modules.knowledge.service.KnowledgeService;
 import com.knowflow.modules.knowledge.vo.KbDocumentDetailVO;
 import com.knowflow.modules.knowledge.vo.KbDocumentListItemVO;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -72,5 +73,16 @@ public class KnowledgeController {
     @PutMapping("/documents/{id}")
     public ApiResponse<Boolean> updateDocument(@PathVariable Long id, @RequestBody UpdateDocumentRequest request) {
         return knowledgeService.updateDocument(id, request);
+    }
+
+    /**
+     * 上传知识库文档
+     *
+     * @param file 上传的文件
+     * @return 上传的文档ID
+     */
+    @PostMapping("/documents/upload")
+    public ApiResponse<Long> uploadDocument(@RequestParam("file") MultipartFile file) {
+        return knowledgeService.uploadDocument(file);
     }
 }

@@ -9,8 +9,12 @@ import com.knowflow.modules.knowledge.mapper.KbDocumentMapper;
 import com.knowflow.modules.knowledge.vo.KbDocumentDetailVO;
 import com.knowflow.modules.knowledge.vo.KbDocumentListItemVO;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class KnowledgeService {
@@ -127,9 +131,65 @@ public class KnowledgeService {
         kbDocumentMapper.updateById(document);
         return ApiResponse.success(true);
 
+    }
+
+    /**
+     * 上传知识库文档
+     *
+     * @param file 上传的文件
+     * @return 上传的文档ID
+     */
+    public ApiResponse<Long> uploadDocument(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return ApiResponse.fail(400, "文件不能为空");
+        }
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null || originalFilename.isBlank()) {
+            return ApiResponse.fail(400, "文件名不能为空");
         }
 
+        // 把原文件名中的所有英文字母转成小写，并将结果保存到 lowerFilename。
+        String lowerFilename = originalFilename.toLowerCase(Locale.ROOT);
+
+        if (!lowerFilename.endsWith(".txt")
+                && !lowerFilename.endsWith(".md")) {
+            return ApiResponse.fail(400, "仅支持txt和md文件");
+        }
+
+        // 读取用户上传文件的全部内容，并按照 UTF-8 转成字符串保存到 content 变量中
+        String content;
+        try {
+            content = new String(file.getBytes(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            return ApiResponse.fail(500, "文件读取失败");
+        }
+
+        if (content.isBlank()) {
+            return ApiResponse.fail(400, "文件内容不能为空");
+        }
+
+
+        int extensionIndex = originalFilename.lastIndexOf('.');
+        String title = originalFilename
+                .substring(0, extensionIndex)
+                .trim();
+
+        if (title.isBlank()) {
+            return ApiResponse.fail(400, "文档标题不能为空");
+        }
+
+        KbDocument document = new KbDocument();
+        document.setTitle(title);
+        document.setContent(content);
+        // 当前暂时使用ID为1的管理员
+        document.setCreatedBy(1L);
+
+        kbDocumentMapper.insert(document);
+
+        return ApiResponse.success(document.getId());
+
     }
+}
 
 
 
