@@ -9,6 +9,7 @@ import com.knowflow.modules.knowledge.mapper.KbDocumentMapper;
 import com.knowflow.modules.knowledge.vo.KbDocumentDetailVO;
 import com.knowflow.modules.knowledge.vo.KbDocumentListItemVO;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -19,9 +20,13 @@ import java.util.Locale;
 @Service
 public class KnowledgeService {
     private final KbDocumentMapper kbDocumentMapper;
+    private final DocumentChunkService documentChunkService;
 
-    public KnowledgeService(KbDocumentMapper kbDocumentMapper) {
+    public KnowledgeService(
+            KbDocumentMapper kbDocumentMapper,
+            DocumentChunkService documentChunkService) {
         this.kbDocumentMapper = kbDocumentMapper;
+        this.documentChunkService = documentChunkService;
     }
 
     /**
@@ -134,11 +139,12 @@ public class KnowledgeService {
     }
 
     /**
-     * 上传知识库文档
+     * 上传知识库文档，保存完整正文并生成文档切片。
      *
-     * @param file 上传的文件
-     * @return 上传的文档ID
+     * @param file 前端上传的 txt 或 md 文件
+     * @return 上传结果，成功时返回新建文档的ID
      */
+    @Transactional
     public ApiResponse<Long> uploadDocument(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             return ApiResponse.fail(400, "文件不能为空");
@@ -184,7 +190,13 @@ public class KnowledgeService {
         // 当前暂时使用ID为1的管理员
         document.setCreatedBy(1L);
 
+        // 保存文档到kb_document表
         kbDocumentMapper.insert(document);
+        // 保存（上传）文档后，将文档切片保存到kb_document_chunk表
+        documentChunkService.createChunks(
+                document.getId(),
+                document.getContent()
+        );
 
         return ApiResponse.success(document.getId());
 

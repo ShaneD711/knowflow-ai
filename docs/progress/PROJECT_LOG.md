@@ -105,3 +105,44 @@
 
 - 在前端增加新建文档表单，调用 `POST /api/kb/documents` 创建文档。
 - 创建成功后重新查询文档列表，并在页面中显示新文档。
+
+## 2026-07-13
+
+### 今日完成
+
+- 新增知识库文档上传接口 `POST /api/kb/documents/upload`。
+- 使用 `MultipartFile` 接收 `multipart/form-data` 中名为 `file` 的文件字段。
+- 完成空文件、空文件名、文件类型和空正文校验，目前仅支持 UTF-8 编码的 `txt` 和 `md` 文件。
+- 使用原文件名生成文档标题，读取文件正文后保存到 `kb_document` 表。
+- 使用 Apifox 的 `form-data` 上传 Markdown 文件，并在 DataGrip 中确认文档保存成功。
+
+## 2026-07-14
+
+### 今日完成
+
+- 在 MySQL 中创建 `kb_document_chunk` 知识库文档切片表，保存原文档 ID、切片序号、切片内容、字符数和创建时间。
+- 创建 `KbDocumentChunk` Entity 和 `KbDocumentChunkMapper`，完成 Java 对象与切片表的映射及数据写入。
+- 创建 `DocumentChunkService`，将文档正文按每 500 字切分，按顺序设置 `chunk_index` 并逐条写入数据库。
+- 在 `KnowledgeService.uploadDocument()` 中调用切片服务，使一次上传同时完成原文保存和切片保存。
+- 为上传方法增加 `@Transactional`，保证原文和切片作为一个整体提交；切片写入失败时，原文也会回滚。
+- 新增 1227 字的 `账号登录故障处理指南.md` 测试文档，通过 Apifox 完成上传验证。
+- 在 DataGrip 中确认文档 ID `11` 生成 3 条切片，`chunk_index` 按 `1、2、3` 正确排列。
+- 通过 Maven 完成项目构建，测试结果为 1 个通过、0 个失败，构建结果为 `BUILD SUCCESS`。
+
+### 下一步
+
+- 实现文档切片的关键词检索，根据用户输入的关键词返回匹配的切片内容。
+
+## 2026-07-15
+
+### 今日完成
+
+- 在项目根目录创建 `database/schema.sql`，将 DataGrip 中的数据库结构整理为可提交、可重新执行的 SQL 脚本。
+- 将 `sys_user`、`kb_document` 和 `kb_document_chunk` 三张表的 DDL 按业务依赖顺序写入脚本。
+- 为数据库和三张表增加 `IF NOT EXISTS`，避免重复执行时因对象已存在而中断。
+- 在 DataGrip 中连续两次执行完整脚本，确认已存在的数据库和表只会产生提示，不会删除或覆盖已有数据。
+- 在 README 中补充数据库结构脚本位置和初始化使用说明，便于在新电脑上恢复项目数据库结构。
+
+### 下一步
+
+- 实现文档切片的关键词检索，让后端能够根据关键词返回匹配的切片。
