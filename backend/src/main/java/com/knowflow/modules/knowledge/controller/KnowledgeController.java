@@ -3,7 +3,9 @@ package com.knowflow.modules.knowledge.controller;
 import com.knowflow.common.result.ApiResponse;
 import com.knowflow.modules.knowledge.dto.CreateDocumentRequest;
 import com.knowflow.modules.knowledge.dto.UpdateDocumentRequest;
+import com.knowflow.modules.knowledge.service.DocumentChunkService;
 import com.knowflow.modules.knowledge.service.KnowledgeService;
+import com.knowflow.modules.knowledge.vo.KbDocumentChunkSearchResultVO;
 import com.knowflow.modules.knowledge.vo.KbDocumentDetailVO;
 import com.knowflow.modules.knowledge.vo.KbDocumentListItemVO;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +17,11 @@ import java.util.List;
 @RestController
 public class KnowledgeController {
     private final KnowledgeService knowledgeService;
+    private final DocumentChunkService documentChunkService;
 
-    public KnowledgeController(KnowledgeService knowledgeService) {
+    public KnowledgeController(KnowledgeService knowledgeService, DocumentChunkService documentChunkService) {
         this.knowledgeService = knowledgeService;
+        this.documentChunkService = documentChunkService;
     }
 
     /**
@@ -84,5 +88,16 @@ public class KnowledgeController {
     @PostMapping("/documents/upload")
     public ApiResponse<Long> uploadDocument(@RequestParam("file") MultipartFile file) {
         return knowledgeService.uploadDocument(file);
+    }
+
+    /**
+     * 根据关键词搜索文档切片
+     *
+     * @param keyword 搜索关键词
+     * @return 匹配的文档切片VO列表
+     */
+    @GetMapping("/search")
+    public ApiResponse<List<KbDocumentChunkSearchResultVO>> searchChunks(@RequestParam String keyword) {
+        return documentChunkService.searchChunks(keyword);
     }
 }
